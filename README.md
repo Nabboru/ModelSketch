@@ -12,7 +12,7 @@ Include logo/demo screenshot etc.
 
 - Clone this repository
 
-- Install Python: Instructions how to install Python [here]
+- Install Python: Instructions how to install Python [here](https://www.python.org/downloads/)
 
 - Install Google API: Follow the 'Before you begin' part only: [here](https://cloud.google.com/vision/docs/quickstart-client-libraries).
 
