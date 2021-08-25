@@ -1,0 +1,19 @@
+item {
+    id: 1
+    name: 'simple class'
+}
+
+item {
+    id: 2
+    name: 'class attributes'
+}
+
+item {
+    id: 3
+    name: 'inheritance'
+}
+
+item {
+    id: 4
+    name: 'association'
+}
