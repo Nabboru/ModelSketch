@@ -21,7 +21,7 @@ os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "./[JSON_FILE_NAME]"
 
 - Install Tensorflow Object Detection API: 
 ```
-# go into the TensorFlow directory in your Google Drive
+# go into the directory in your terminal
 cd uml
 
 # Clone the TensorFlow Model Garden repository
@@ -39,7 +39,11 @@ python -m pip install --use-feature=2020-resolver .
 ```
 
 ## How to use
-If people like your project they’ll want to learn how they can use it. To do so include step by step guide to use your project.
+Add the handwritten uml diagrams to uml/images.
+From the folder uml, run:
+```
+python3 main.py
+```
 
 ## API Reference
 Depending on the size of the project, if it is small and simple enough the reference docs can be added to the README. For medium size to larger projects it is important to at least provide a link to where the API reference docs live.
