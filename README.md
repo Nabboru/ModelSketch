@@ -29,11 +29,13 @@ git clone https://github.com/tensorflow/models.git
 
 # Install some required libraries and tools.
 apt-get install protobuf-compiler python-lxml python-pil
-pip install --upgrade google-cloud-vision Cython pandas tf-slim lvis
+pip install --upgrade tensorflow google-cloud-vision Cython pandas tf-slim lvis
 
 # Compile the Protobuf libraries.
 cd 'uml/models/research/'
 protoc object_detection/protos/*.proto --python_out=.
+cp object_detection/packages/tf2/setup.py .
+python -m pip install --use-feature=2020-resolver .
 ```
 
 ## How to use
