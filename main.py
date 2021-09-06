@@ -1,21 +1,25 @@
+import warnings
+import os
+import sys
+
+warnings.filterwarnings('ignore')   # Suppress Matplotlib warnings
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2' # Suppress Tensorflow warnings and info messages
+os.environ['PYTHONPATH']="./models"
+sys.path.append("./models/research")
+
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
-import warnings
 import cv2
-import os
-from google.cloud import vision
-import tensorflow as tf
-from object_detection.utils import label_map_util
-from object_detection.utils import visualization_utils as viz_utils
 import copy
 import glob
+import tensorflow as tf
+from google.cloud import vision
+from object_detection.utils import label_map_util
+from object_detection.utils import visualization_utils as viz_utils
 
-warnings.filterwarnings('ignore')   # Suppress Matplotlib warnings
-
-img =  glob.glob("./images/*")
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "./gleaming-vision-321216-443860317142.json"
-
+img =  glob.glob("./images/*")
 
 # Loading the label_map
 category_index=label_map_util.create_category_index_from_labelmap(
@@ -83,12 +87,13 @@ class ClassWithAttributes():
     def __str__(self):
         string = '\n'
         
-        # Check if there is inheritances related to this class
+        # Check if class is a parent in a inheritance
         if self.is_parent:
             string += 'abstract '
 
         string += (f'class {self.title} ')
 
+        # Check if there are inheritances related to this class
         if self.inheritance:
             try:
                 string += (f'extends {self.inheritance.parent.title} ')
@@ -96,13 +101,14 @@ class ClassWithAttributes():
                 string += (f'extends ?? ')
         string += '{'
 
+        #
         for i in range(1,len(self.text)):
           if self.text[i] != ':':
             try:
               if self.text[i+1] == ':' and self.text[i+2]:
-                string += (f'\n\t{self.text[i]}: {self.text[i+2]}')
+                string += (f'\n\t{self.text[i]}: {self.text[i+2]};')
             except IndexError:
-              string += (f'\n\t{self.text[i]}')
+              string += (f'\n\t{self.text[i]};')
         string += ('\n}')
 
         # Check if there are associations related to this class
@@ -170,14 +176,67 @@ def load_image_into_numpy_array(path):
     """
     return np.array(Image.open(path))
 
-def detect_document(img):
-    """Detects document features in an image."""
-    client = vision.ImageAnnotatorClient()
-
-    content = cv2.imencode('.jpg', img)[1].tostring()
-
-    image = vision.Image(content=content)
+def detect(image_path):
+    """Image detection
+    Args:
+        image_path: the path of the image
+    Returns:
+        a dictionary with the bounding boxes and its classes
+    """
+    #Load image to numpy array
+    image_np = load_image_into_numpy_array(image_path)
     
+    # The input needs to be a tensor, convert it using `tf.convert_to_tensor`.
+    input_tensor = tf.convert_to_tensor(image_np)
+        
+    # The model expects a batch of images, so add an axis with `tf.newaxis`.
+    input_tensor = input_tensor[tf.newaxis, ...]
+
+    og_detections = detect_fn(input_tensor)     # Detect the image
+
+    # Convert output to numpy arrays, take index [0] to remove the batch 
+    # dimension and filter out detections in order to get 
+    # only boxes, classes and scores
+    key_of_interest = ['detection_classes', 'detection_boxes', 'detection_scores']
+    num_detections = int(og_detections.pop('num_detections'))
+    detections = {key:value[0,:num_detections].numpy()
+                for key,value in og_detections.items() if key in key_of_interest}
+
+    # Convert detection classes into integers.
+    detections['detection_classes'] = detections['detection_classes'].astype(np.int64)
+            
+    # Filter detection if the confidence threshold of it is smaller than 80%
+    for key in key_of_interest:
+        scores = detections['detection_scores']
+        current_array = detections[key]
+        filtered_current_array = current_array[scores > 0.8]
+        detections[key] = filtered_current_array
+
+    return detections
+
+def crop_box(box, height, width, image):
+    """
+    Crop the bounding box from the original image
+    Args:
+        box:  bounding box points as a list
+        height: height of the original image
+        width: width of the original image
+        image: the original image
+    Returns:
+        cropped image
+    """
+    ymin = int(box[0] * height)
+    xmin = int(box[1] * width)
+    ymax = int(box[2] * height)
+    xmax = int(box[3] * width)
+    return image[ymin:ymax, xmin:xmax, :]
+
+def detect_document(img):
+    """Detects handwritten text in an image."""
+
+    client = vision.ImageAnnotatorClient()
+    content = cv2.imencode('.jpg', img)[1].tostring()
+    image = vision.Image(content=content)
     response = client.document_text_detection(image=image)
 
     useless_text = ['\"']
@@ -201,7 +260,7 @@ def intersection_top(box1, box2):
         box1:
         box2:
     Returns:
-        Boolean
+        
     """
     new_box1 = copy.deepcopy(box1)
     diff = abs(new_box1[0] - new_box1[2]) / 2.0
@@ -209,6 +268,13 @@ def intersection_top(box1, box2):
     return intersection(new_box1, box2)
 
 def intersection(box1, box2):
+    """
+    Args:
+        box1: bounding box 
+        box2: bounding box
+    Returns:
+        float: the area that intersects the two boxes
+    """
     y_min1, x_min1, y_max1, x_max1 = box1
     y_min2, x_min2, y_max2, x_max2 = box2
     min_ymax = min(y_max1, y_max2)
@@ -218,47 +284,6 @@ def intersection(box1, box2):
     max_xmin = max(x_min1, x_min2)
     intersect_widths = max(0, min_xmax - max_xmin)
     return intersect_heights * intersect_widths
-
-def detect(image_path):
-    image_np = load_image_into_numpy_array(image_path)
-    
-    # The input needs to be a tensor, convert it using `tf.convert_to_tensor`.
-    input_tensor = tf.convert_to_tensor(image_np)
-        
-    # The model expects a batch of images, so add an axis with `tf.newaxis`.
-    input_tensor = input_tensor[tf.newaxis, ...]
-
-    # input_tensor = np.expand_dims(image_np, 0)
-
-    # Detect the image
-    og_detections = detect_fn(input_tensor)
-
-    # Convert output to numpy arrays, take index [0] to remove the batch 
-    # dimension and filter out detections in order to get 
-    # only boxes, classes and scores
-    key_of_interest = ['detection_classes', 'detection_boxes', 'detection_scores']
-    num_detections = int(og_detections.pop('num_detections'))
-    detections = {key:value[0,:num_detections].numpy()
-                for key,value in og_detections.items() if key in key_of_interest}
-
-    # The detection classes should be integers.
-    detections['detection_classes'] = detections['detection_classes'].astype(np.int64)
-            
-    # Filter detection if the confidence threshold of it is smaller than 80%
-    for key in key_of_interest:
-        scores = detections['detection_scores']
-        current_array = detections[key]
-        filtered_current_array = current_array[scores > 0.8]
-        detections[key] = filtered_current_array
-    return detections
-
-def crop_box(coordinates, height, width, image):
-    ymin = int(coordinates[0] * height)
-    xmin = int(coordinates[1] * width)
-    ymax = int(coordinates[2] * height)
-    xmax = int(coordinates[3] * width)
-    return image[ymin:ymax, xmin:xmax, :]
-
 
 def main():
     for image_path in img:
@@ -286,21 +311,36 @@ def main():
         classes = []
         associations = []
         inheritance = []
+
+        # Create objects for each detected object. The label map for classes is set as follow:
+        # 1: Simple class
+        # 2: Class with attributes
+        # 3: Inheritance
+        # 4: association
         for i in range(len(detections['detection_classes'])):
             box_class = detections['detection_classes'][i]
             box_cropped = crop_box(detections['detection_boxes'][i], height, width, image)
+            
+            # Create a simple class object if the detections class is 1
             if box_class == 1:
                 text = detect_document(box_cropped)
                 classes.append(SimpleClass(detections['detection_boxes'][i], text))
+            
+            # Create a class with attributes object if the detections class is 2
             elif box_class == 2:
                 text = detect_document(box_cropped)
                 classes.append(ClassWithAttributes(detections['detection_boxes'][i], text))
+            
+            # Create a inheritance object if the detections class is 3
             elif box_class == 3:
                 inheritance.append(Inheritance(detections['detection_boxes'][i]))
+
+            # Create an association object if the detections class is 4
             elif box_class == 4:
                 text = detect_document(box_cropped)
                 associations.append(Association(detections['detection_boxes'][i]))
         
+        #  
         for i in inheritance:
             for c in classes:
                 if intersection_top(i.box, c.box) > 0.0:
