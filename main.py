@@ -95,7 +95,6 @@ class ClassWithAttributes():
             except:
                 string += (f'extends ?? ')
         string += '{'
-        
         i = 1
         while i < len(self.text):
             if self.text[i] != ':':
