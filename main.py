@@ -96,13 +96,16 @@ class ClassWithAttributes():
                 string += (f'extends ?? ')
         string += '{'
 
-        for i in range(1,len(self.text)):
-          if self.text[i] != ':':
-            try:
-              if self.text[i+1] == ':' and self.text[i+2]:
-                string += (f'\n\t{self.text[i]}: {self.text[i+2]}')
-            except IndexError:
-              string += (f'\n\t{self.text[i]}')
+        i = 1
+        while i < len(self.text):
+            if self.text[i] != ':':
+                try:
+                    if self.text[i+1] == ':' and self.text[i+2]:
+                        string += (f'\n\t{self.text[i]}: {self.text[i+2]}')
+                        i += i+2
+                except IndexError:
+                    string += (f'\n\t{self.text[i]}')
+            i += 1
         string += ('\n}')
 
         # Check if there are associations related to this class
