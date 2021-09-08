@@ -99,26 +99,28 @@ class ClassWithAttributes():
                 string += (f'extends {self.inheritance.parent.title} ')
             except:
                 string += (f'extends ?? ')
+                
         string += '{'
-
-        #
-        for i in range(1,len(self.text)):
-          if self.text[i] != ':':
-            try:
-              if self.text[i+1] == ':' and self.text[i+2]:
-                string += (f'\n\t{self.text[i]}: {self.text[i+2]};')
-            except IndexError:
-              string += (f'\n\t{self.text[i]};')
-        string += ('\n}')
-
+        i = 1
+        while i < len(self.text):
+            if self.text[i] != ':':
+                try:
+                    if self.text[i+1] == ':' and self.text[i+2]:
+                        string += (f'\n\t{self.text[i]}: {self.text[i+2]};')
+                        i += 2
+                except IndexError:
+                    string += (f'\n\t{self.text[i]};')
+            i += 1
+        
         # Check if there are associations related to this class
         # and print accordingly
         if self.associations:
             for a in self.associations:
                 try:
-                    string += (f'\n{{ reference: {a.get_other_class(self).title} }}')
+                    string += (f'\n\treference: {a.get_other_class(self).title}')
                 except:
-                    string += (f'\n{{ reference: ??')
+                    string += (f'\n\treference: ??')
+        string += ('\n}')
 
         return string
 
