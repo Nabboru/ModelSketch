@@ -55,14 +55,15 @@ class SimpleClass():
             except:
                 string += (f'extends ?? ')
         
-        string += '{ }'
+        string += '{'
 
         if self.associations:
             for a in self.associations:
                 try:
-                    string += (f'\n{{ reference: {a.get_other_class(self).title} }}')
+                    string += (f'\n\treference {a.get_other_class(self).title.lower}: {a.get_other_class(self).title};')
                 except:
-                    string += (f'\n{{ reference: ??')
+                    string += (f'\n\treference ?: ?;')
+        string += ('\n}')
         return string
 
     def add_association(self, association):
@@ -98,8 +99,8 @@ class ClassWithAttributes():
             try:
                 string += (f'extends {self.inheritance.parent.title} ')
             except:
-                string += (f'extends ?? ')
-                
+                string += (f'extends ? ')
+
         string += '{'
         i = 1
         while i < len(self.text):
@@ -117,9 +118,9 @@ class ClassWithAttributes():
         if self.associations:
             for a in self.associations:
                 try:
-                    string += (f'\n\treference: {a.get_other_class(self).title}')
+                    string += (f'\n\treference {a.get_other_class(self).title.lower()}: {a.get_other_class(self).title};')
                 except:
-                    string += (f'\n\treference: ??')
+                    string += (f'\n\treference ?: ?;')
         string += ('\n}')
 
         return string
