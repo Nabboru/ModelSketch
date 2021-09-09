@@ -7,16 +7,21 @@
 
 ## Installation
 
-- Clone this repository
+- Clone/download this repository
 
 - Install Python: Instructions how to install Python [here](https://www.python.org/downloads/)
 
 - Install Google API: Follow the 'Before you begin' part only: [here](https://cloud.google.com/vision/docs/quickstart-client-libraries).
 
-Once you have the JSON file, move it to the uml folder. Open detection.py and edit this line with the name of your json file:
+Once you have the JSON file, move it to the uml folder. Open main.py and edit this line with the name of your json file:
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "./[JSON_FILE_NAME]"
 
 - Install Tensorflow Object Detection API: 
+On Windows:
+Go to this repository on your machine.
+Right click on windows_install.ps1 and select 'Run with Powershell'
+
+On Linux:
 ```
 # go into the directory in your terminal
 cd uml
@@ -37,12 +42,10 @@ python -m pip install --use-feature=2020-resolver .
 
 ## How to use
 Add the handwritten uml diagrams to uml/images.
-From the folder uml, run:
+From the folder uml, run on the terminal:
 ```
 python3 main.py
 ```
 
 ## License
-A short snippet describing the license (MIT, Apache etc)
-
 MIT © [Leticia Piucco Marques]()
