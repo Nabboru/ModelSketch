@@ -7,19 +7,20 @@
 
 ## Installation
 
-- Clone/download this repository
+1. Clone/download this repository
 
-- Install Python: Instructions how to install Python [here](https://www.python.org/downloads/)
+2. Install Python [here](https://www.python.org/downloads/)
 
-- Install Google API: Follow the 'Before you begin' part only: [here](https://cloud.google.com/vision/docs/quickstart-client-libraries).
+3. Install Google API [here](https://cloud.google.com/vision/docs/quickstart-client-libraries) (Follow the 'Before you begin' part only)
 
 Once you have the JSON file, move it to the uml folder. Open main.py and edit this line with the name of your json file:
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "./[JSON_FILE_NAME]"
 
-- Install Tensorflow Object Detection API: 
+4. Install Tensorflow Object Detection API: 
+
 On Windows:
-Go to this repository on your machine.
-Right click on windows_install.ps1 and select 'Run with Powershell'
+- Go to this repository on your machine.
+- Right click on windows_install.ps1 and select 'Run with Powershell'
 
 On Linux:
 ```
