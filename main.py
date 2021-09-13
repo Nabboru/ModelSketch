@@ -240,7 +240,7 @@ def detect_document(img):
     client = vision.ImageAnnotatorClient()
     content = cv2.imencode('.jpg', img)[1].tostring()
     image = vision.Image(content=content)
-    response = client.document_text_detection(image=image)
+    response = client.document_text_detection(image=image, image_context={"language_hints": ["en"]})
 
     useless_text = ['\"']
     text = []
