@@ -18,7 +18,7 @@ from google.cloud import vision
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as viz_utils
 
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "./gleaming-vision-321216-443860317142.json"
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "./your-json-file-name.json"
 img =  glob.glob("./images/*")
 
 # Loading the label_map
@@ -235,8 +235,14 @@ def crop_box(box, height, width, image):
     return image[ymin:ymax, xmin:xmax, :]
 
 def detect_document(img):
-    """Detects handwritten text in an image."""
-
+    """
+    Detects handwritten text in an image.
+    Args:
+        img: image that which text will be detected
+    Returns:
+        list of detected words
+    Credits: https://github.com/googleapis/python-vision/blob/HEAD/samples/snippets/detect/detect.py
+    """
     client = vision.ImageAnnotatorClient()
     content = cv2.imencode('.jpg', img)[1].tostring()
     image = vision.Image(content=content)
@@ -294,7 +300,11 @@ def main():
         print('-----------------------------------------------------------------')
         detections = detect(image_path)
         image_np = load_image_into_numpy_array(image_path)
+
+        # Uncomment the following code if you wish to visualize the detections
+        """ 
         image_np_with_detections=image_np.copy()
+
         viz_utils.visualize_boxes_and_labels_on_image_array(
                 image_np_with_detections,
                 detections['detection_boxes'],
@@ -308,6 +318,7 @@ def main():
         plt.figure(figsize=(18, 18))
         plt.imshow(image_np_with_detections)
         plt.show()
+        """
 
         image = cv2.imread(image_path)
         height, width, channels = image.shape
@@ -359,6 +370,7 @@ def main():
                     a.add_class(c)
                     c.add_association(a)
 
+        # Print all classes
         for c in classes:
             print(c)
 main()

@@ -5,9 +5,12 @@ if (Test-Path -Path '.\models') {
     git clone https://github.com/tensorflow/models.git
 
 }
-Invoke-WebRequest -Uri https://github.com/protocolbuffers/protobuf/releases/download/v3.18.0-rc2/protoc-3.18.0-rc-2-win64.zip -OutFile C:\Users\letic\Downloads\protobuf-all-3.18.0-rc-2.zip
-Expand-Archive -Force 'C:\Users\letic\Downloads\protoc-3.18.0-rc-2-win64.zip' 'C:\Users\letic\Google Protoc'
-$env:Path += ";C:\Users\letic\Google Protoc\bin"
+
+$username = [Environment]::UserName
+Write-Output $username 
+Invoke-WebRequest -Uri https://github.com/protocolbuffers/protobuf/releases/download/v3.18.0-rc2/protoc-3.18.0-rc-2-win64.zip -OutFile C:\Users\$username\Downloads\protobuf-all-3.18.0-rc-2.zip
+Expand-Archive -Force "C:\Users\$username\Downloads\protoc-3.18.0-rc-2-win64.zip" "C:\Users\$username\Google Protoc"
+$env:Path += ";C:\Users\$username\Google Protoc\bin"
 Set-Location -Path './models/research'
 protoc object_detection/protos/*.proto --python_out=.
 Copy-Item "object_detection/packages/tf2/setup.py" -Destination .
