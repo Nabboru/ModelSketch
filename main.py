@@ -18,7 +18,7 @@ from google.cloud import vision
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as viz_utils
 
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "./your-json-file-name.json"
+os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "./your-cloud-vision-json-file.json"
 img =  glob.glob("./images/*")
 
 # Loading the label_map
@@ -176,6 +176,7 @@ def load_image_into_numpy_array(path):
         path: the file path to the image
     Returns:
         uint8 numpy array with shape (img_height, img_width, 3)
+    Credits: https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/index.html
     """
     return np.array(Image.open(path))
 
@@ -185,6 +186,7 @@ def detect(image_path):
         image_path: the path of the image
     Returns:
         a dictionary with the bounding boxes and its classes
+    Credits: https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/index.html
     """
     #Load image to numpy array
     image_np = load_image_into_numpy_array(image_path)
