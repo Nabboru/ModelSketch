@@ -298,7 +298,7 @@ def intersection(box1, box2):
 
 def main():
     for image_path in img:
-        print(f'\nDectection for {image_path}')
+        print(f'\nDetection for {image_path}')
         print('-----------------------------------------------------------------')
         detections = detect(image_path)
         image_np = load_image_into_numpy_array(image_path)
