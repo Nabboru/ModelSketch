@@ -8,16 +8,16 @@ Transforms informal sketches of UML models to pseudocode.
 
 ## Installation
 
-1. Clone/download this repository
+#### 1. Clone/download this repository
 
-2. Install Python [here](https://www.python.org/downloads/)
+#### 2. Install Python [here](https://www.python.org/downloads/)
 
-3. Install Google API [here](https://cloud.google.com/vision/docs/quickstart-client-libraries) (Follow the 'Before you begin' part only)
+#### 3. Install Google API [here](https://cloud.google.com/vision/docs/quickstart-client-libraries) (Follow the 'Before you begin' part only)
 
 Once you have the JSON file, move it to the uml folder. Open main.py and edit this line with the name of your json file:
 os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = "./[JSON_FILE_NAME]"
 
-4. Install Tensorflow Object Detection API: 
+#### 4. Install Tensorflow Object Detection API: 
 
 On Windows:
 - Go to this repository on your machine.
