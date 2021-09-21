@@ -356,7 +356,7 @@ def main():
                 text = detect_document(box_cropped)
                 associations.append(Association(detections['detection_boxes'][i]))
         
-        #  
+        # Check intersection between classes and inheritance objects.
         for i in inheritance:
             for c in classes:
                 if intersection_top(i.box, c.box) > 0.0:
@@ -365,7 +365,8 @@ def main():
                 elif intersection(i.box, c.box) > 0.0:
                     i.add_child(c)
                     c.add_inheritance(i)
-
+                    
+        # Check intersection between classes and inheritance objects.
         for a in associations:
             for c in classes:
                 if intersection(a.box, c.box) > 0.0:
