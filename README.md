@@ -1,5 +1,5 @@
 ## ModelSketch
-Transforms informal sketches of UML models to pseudocode.
+Transforms informal sketches of UML models to textual modes.
 
 ## Tech/framework used
 <b>Built with</b>
